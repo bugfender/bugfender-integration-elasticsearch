@@ -43,21 +43,23 @@ func (i *Integration) Sync(ctx context.Context, retries uint) error {
 	for ctx.Err() == nil {
 		boff := backoff.NewExponential(5*time.Second, 300*time.Second)
 		var nErrors uint = 0
-		for ctx.Err() == nil {
+		for ctx.Err() == nil { // retry on error
 			// save the state every 5 minutes
 			if time.Now().After(nextStateSave) {
 				i.saveState()
 				nextStateSave = time.Now().Add(5 * time.Second)
 			}
 			err := i.syncOnePage(ctx)
-			if err != nil {
-				nErrors++
-				log.Println("Trial", nErrors, "error:", err)
-				if nErrors == retries {
-					return err
-				}
-				boff.Wait(ctx)
+			if err == nil {
+				break
 			}
+			// wait and retry
+			nErrors++
+			log.Println("Trial", nErrors, "error:", err)
+			if nErrors == retries {
+				return err
+			}
+			boff.Wait(ctx)
 		}
 	}
 	return ctx.Err()
