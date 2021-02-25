@@ -16,6 +16,7 @@ import (
 
 	"golang.org/x/oauth2"
 
+	"bugfender-integration-elasticsearch/pkg/backoff"
 	"bugfender-integration-elasticsearch/pkg/jsonurl"
 	"bugfender-integration-elasticsearch/pkg/oauth2util"
 )
@@ -116,9 +117,7 @@ func makeFirstPageURL(config *Config, appID int64) url.URL {
 
 // GetNextPage gets the next page of logs, blocks until there is some data to return
 func (dm *Client) GetNextPage(ctx context.Context) ([]Log, error) {
-	const initialWaitTime = 5 * time.Second
-	const maxWaitTime = 300 * time.Second
-	currentWaitTime := initialWaitTime
+	boff := backoff.NewExponential(5*time.Second, 300*time.Second)
 	for {
 		if err := ctx.Err(); err != nil {
 			return nil, err
@@ -128,19 +127,9 @@ func (dm *Client) GetNextPage(ctx context.Context) ([]Log, error) {
 			return nil, err
 		}
 		if page.PreviousURL == nil {
-			// reached the end, wait and try again
-			select {
-			case <-ctx.Done(): // end gracefully if context is cancelled
-			case <-time.After(currentWaitTime):
-			}
-			// exponential backoff
-			currentWaitTime = currentWaitTime * 2
-			if currentWaitTime > maxWaitTime {
-				currentWaitTime = maxWaitTime
-			}
+			boff.Wait(ctx)
 			continue
 		}
-		currentWaitTime = initialWaitTime
 		dm.nextPageURL = url.URL(*page.PreviousURL)
 		return page.Data, ctx.Err()
 	}

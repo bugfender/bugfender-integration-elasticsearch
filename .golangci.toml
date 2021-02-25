@@ -1,0 +1,12 @@
+[issues]
+max-same-issues = 0
+max-issues-per-linter = 0
+
+[linters]
+enable = ["goimports", "gosec"]
+
+[linters-settings]
+"goimports.local-prefixes" = "bitbucket.org/bugfender/remote-logger-web"
+
+[output]
+uniq-by-line = false

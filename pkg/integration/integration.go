@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"time"
+
+	"bugfender-integration-elasticsearch/pkg/backoff"
 )
 
 type Integration struct {
@@ -28,7 +30,9 @@ func New(bugfenderClient *Client, destination LogWriter, verbose bool, stateFile
 	}, nil
 }
 
-func (i *Integration) Sync(ctx context.Context) error {
+// Sync loops synchronizing forever, until cancelled
+// Exits after retrying retries times with errors
+func (i *Integration) Sync(ctx context.Context, retries uint) error {
 	if i.verbose {
 		log.Println("Sync started, press Ctrl-C to stop")
 	}
@@ -37,27 +41,45 @@ func (i *Integration) Sync(ctx context.Context) error {
 	}()
 	nextStateSave := time.Now()
 	for ctx.Err() == nil {
-		// save the state every 5 minutes
-		if time.Now().After(nextStateSave) {
-			i.saveState()
-			nextStateSave = time.Now().Add(5 * time.Second)
+		boff := backoff.NewExponential(5*time.Second, 300*time.Second)
+		var nErrors uint = 0
+		for ctx.Err() == nil {
+			// save the state every 5 minutes
+			if time.Now().After(nextStateSave) {
+				i.saveState()
+				nextStateSave = time.Now().Add(5 * time.Second)
+			}
+			err := i.syncOnePage(ctx)
+			if err != nil {
+				nErrors++
+				log.Println("Trial", nErrors, "error:", err)
+				if nErrors == retries {
+					return err
+				}
+				boff.Wait(ctx)
+			}
 		}
-		// get a page from Bugfender
-		logs, err := i.bugfenderClient.GetNextPage(ctx)
-		if err != nil {
-			return err
-		}
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
-		// put it in the destination
-		err = i.destination.WriteLogs(ctx, logs)
-		if err != nil {
-			return err
-		}
-		if i.verbose {
-			log.Printf("Wrote %d logs", len(logs))
-		}
+	}
+	return ctx.Err()
+}
+
+// syncOnePage synchronizes one page of logs, returns error if something failed
+func (i *Integration) syncOnePage(ctx context.Context) error {
+	// get a page from Bugfender
+	logs, err := i.bugfenderClient.GetNextPage(ctx)
+	if err != nil {
+		return err
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	// put it in the destination
+	err = i.destination.WriteLogs(ctx, logs)
+	if err != nil {
+		return err
+	}
+	if i.verbose {
+		log.Printf("Wrote %d logs", len(logs))
 	}
 	return ctx.Err()
 }

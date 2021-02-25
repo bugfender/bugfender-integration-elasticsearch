@@ -32,6 +32,7 @@ func main() {
 		stateFile              string
 		insecureSkipTLSVerify  bool
 		verbose                bool
+		retries                uint
 	)
 	flag.String(flag.DefaultConfigFlagname, "", "path to config file")
 	// Bugfender parameters
@@ -50,6 +51,7 @@ func main() {
 	flag.StringVar(&stateFile, "state-file", "", "File to restore and save state, to resume sync (recommended)")
 	flag.BoolVar(&insecureSkipTLSVerify, "insecure-skip-tls-verify", false, "Skip TLS certificate verification (insecure)")
 	flag.BoolVar(&verbose, "verbose", false, "Verbose messages")
+	flag.UintVar(&retries, "retries", 10, "Number of times to retry on errors before exiting. 0 = never give up.")
 	flag.Parse()
 
 	// parameter validation
@@ -115,7 +117,7 @@ func main() {
 		cancelFunc()
 	}()
 
-	err = i.Sync(ctx)
+	err = i.Sync(ctx, retries)
 	if ctx.Err() != context.Canceled && err != nil {
 		log.Fatal(err)
 	}

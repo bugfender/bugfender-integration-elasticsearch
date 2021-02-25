@@ -17,9 +17,10 @@ Usage of ./bugfender-integration-elasticsearch:
   -es-password="": Password to connect to Elasticsearch
   -es-username="": Username to connect to Elasticsearch
   -insecure-skip-tls-verify=false: Skip TLS certificate verification (insecure)
+  -retries=10: Number of times to retry on errors before exiting. 0 = never give up.
   -state-file="": File to restore and save state, to resume sync (recommended)
   -verbose=false: Verbose messages
-```
+  ```
 
 A typical example on how to run this tool would be:
 
