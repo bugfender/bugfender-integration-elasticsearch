@@ -92,6 +92,6 @@ func (i *Integration) saveState() {
 	}
 	err := ioutil.WriteFile(i.stateFile, i.bugfenderClient.GetState(), 0600)
 	if err != nil {
-		log.Fatalln("error saving state file:", err)
+		log.Println("error saving state file:", err)
 	}
 }

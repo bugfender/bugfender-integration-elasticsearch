@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
@@ -40,7 +41,7 @@ func NewClient(index string, addresses []string, username, password string) (*Cl
 		Index:  index,
 	})
 	if err != nil {
-		log.Fatalf("Error creating the indexer: %s", err)
+		return nil, fmt.Errorf("Error creating the indexer: %s", err)
 	}
 	failureFunc := func(
 		ctx context.Context,
@@ -65,7 +66,7 @@ func (ec *Client) WriteLogs(ctx context.Context, page []integration.Log) error {
 	for _, l := range page {
 		doc, err := json.Marshal(l)
 		if err != nil {
-			panic(err)
+			panic(err) // programming error
 		}
 		err = ec.indexer.Add(
 			ctx,

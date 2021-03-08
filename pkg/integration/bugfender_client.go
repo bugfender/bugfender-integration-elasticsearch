@@ -179,7 +179,10 @@ func (dm *Client) getLogsPage(ctx context.Context, url url.URL) (*page, error) {
 		}
 	}()
 	var page page
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("unexpected status code: %s. response was: %s", resp.Status, string(bodyBytes))
 	}
