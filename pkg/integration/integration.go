@@ -45,7 +45,7 @@ func (i *Integration) Sync(ctx context.Context, retries uint) error {
 			// save the state every 5 minutes
 			if time.Now().After(nextStateSave) {
 				i.saveState()
-				nextStateSave = time.Now().Add(5 * time.Second)
+				nextStateSave = time.Now().Add(5 * time.Minute)
 			}
 			err := i.syncOnePage(ctx)
 			if err == nil {
