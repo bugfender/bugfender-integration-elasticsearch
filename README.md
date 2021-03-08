@@ -24,13 +24,23 @@ Usage of ./bugfender-integration-elasticsearch:
 
 A typical example on how to run this tool would be:
 
+```shell
     ./bugfender-integration-elasticsearch -app-id=1234 -client-id=your_client_id -client-secret=your_client_secret -state-file state.json -es-index logs -es-nodes http://127.0.0.1:9200
+```
 
 An example Elasticsearch instance can be run with the provided `docker-compose.yml` file.
 
 If you would like to test this tool without an Elasticsearch, you can dump the logs to console:
 
+```shell
     ./bugfender-integration-elasticsearch -app-id=1234 -client-id=your_client_id -client-secret=your_client_secret -state-file state.json -console-output
+```
+
+## Building from source
+
+```shell
+go get github.com/bugfender/bugfender-integration-elasticsearch
+```
 
 ## Writing integrations with other databases
 
