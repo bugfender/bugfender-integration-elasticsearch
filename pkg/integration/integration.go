@@ -36,9 +36,7 @@ func (i *Integration) Sync(ctx context.Context, retries uint) error {
 	if i.verbose {
 		log.Println("Sync started, press Ctrl-C to stop")
 	}
-	defer func() {
-		i.saveState()
-	}()
+	defer i.saveState()
 	nextStateSave := time.Now()
 	for ctx.Err() == nil {
 		boff := backoff.NewExponential(5*time.Second, 300*time.Second)
