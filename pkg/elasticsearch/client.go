@@ -11,7 +11,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esutil"
 
-	"bugfender-integration-elasticsearch/pkg/integration"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/integration"
 )
 
 type Client struct {

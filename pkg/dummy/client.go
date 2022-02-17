@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"bugfender-integration-elasticsearch/pkg/integration"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/integration"
 )
 
 // ConsoleDestination prints logs to console

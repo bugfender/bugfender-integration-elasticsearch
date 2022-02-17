@@ -1,4 +1,4 @@
-module bugfender-integration-elasticsearch
+module github.com/bugfender/bugfender-integration-elasticsearch
 
 go 1.15
 

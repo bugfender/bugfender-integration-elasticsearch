@@ -16,9 +16,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"bugfender-integration-elasticsearch/pkg/backoff"
-	"bugfender-integration-elasticsearch/pkg/jsonurl"
-	"bugfender-integration-elasticsearch/pkg/oauth2util"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/backoff"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/jsonurl"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/oauth2util"
 )
 
 type Config struct {

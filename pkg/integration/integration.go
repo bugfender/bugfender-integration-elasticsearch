@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"bugfender-integration-elasticsearch/pkg/backoff"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/backoff"
 )
 
 type Integration struct {

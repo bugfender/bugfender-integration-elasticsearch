@@ -14,9 +14,9 @@ import (
 
 	"github.com/namsral/flag"
 
-	"bugfender-integration-elasticsearch/pkg/dummy"
-	"bugfender-integration-elasticsearch/pkg/elasticsearch"
-	"bugfender-integration-elasticsearch/pkg/integration"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/dummy"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/elasticsearch"
+	"github.com/bugfender/bugfender-integration-elasticsearch/pkg/integration"
 )
 
 func main() {
